@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --dark-mode: selector(.dark);
+}
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Чтобы убрать черный фон Vite, который все портит */
+:root, body {
+  background-color: transparent !important;
+  margin: 0;
+  padding: 0;
+}
