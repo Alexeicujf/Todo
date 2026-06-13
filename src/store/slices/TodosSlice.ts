@@ -8,11 +8,12 @@ export interface Todo {
     list?: string 
     description: string,
 } 
-interface TotoSlise {
-    todos: Todo[]
+export interface TotoSlise {
+    todos: Todo[],
+    isCreateModalOpen: boolean
 }
 const data = localStorage.getItem("todo_data");
-const initialState: TotoSlise = data ? JSON.parse(data): {todos: []} ;
+const initialState: TotoSlise = data ? JSON.parse(data): {todos: [], isCreateModalOpen: false} ;
 export const TodosSlice = createSlice({
     name: "todo" ,
     initialState,
@@ -34,14 +35,18 @@ export const TodosSlice = createSlice({
                 item.title = activity.payload.title
                 item.description = activity.payload.description
             }
+        }, 
+        setModalOpen: (state, action) => {
+            state.isCreateModalOpen = action.payload
         }
-    }
+        }
 })
 
 
-export const {createTodo,checkTodo, updateTodo,removeTodo} =TodosSlice.actions;
+export const {createTodo,checkTodo, setModalOpen, updateTodo,removeTodo} =TodosSlice.actions;
 export default TodosSlice.reducer
-
- export const useTodos = () => useAppSelector(state => state.todos.todos) 
+export const useOpenModal = () => useAppSelector(state => state.todos.isCreateModalOpen)
+export const useTodos = () => useAppSelector(state => state.todos.todos) 
 
  // Сделать для списков !!!  todoAppUI Посмотреть! ПО id попробовать 
+ /// прокси класс/объект

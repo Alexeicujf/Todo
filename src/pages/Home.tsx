@@ -1,10 +1,10 @@
-import { ListTodos } from "../components/ListTodos";
+import { ListTodos } from "../components/to-do/ListTodos";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { useTheme } from "../context/ThemeContext";
 import { Button } from "../ui/Button";
 import { NavLink } from "react-router";
 import { useTodos } from "../store/slices/TodosSlice";
-import { CreateTodo } from "../components/CreateTodo";
+import { CreateTodo } from "@/components/to-do/CreateTodo";
 
 
 export function HomePage() {

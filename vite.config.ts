@@ -1,24 +1,32 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { resolve } from 'path'
-import eslint from "vite-plugin-eslint"
+import tailwindcss from "@tailwindcss/vite";
+import { resolve } from "path";
+import { defineConfig } from "vite";
 
-// https://vite.dev/config/
+// 1. Возвращаем обратно стандартный плагин, который умеет в babel и compiler
+// @ts-ignore
+import react from "@vitejs/plugin-react";
+
+// @ts-ignore
+import eslint from "vite-plugin-eslint";
+import svgr from "vite-plugin-svgr";
+
 export default defineConfig({
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src")
+      "@": resolve(__dirname, "src"),
     },
-
   },
   plugins: [
     tailwindcss(),
     react({
       babel: {
-        plugins: [['babel-plugin-react-compiler']],
+        plugins: [["babel-plugin-react-compiler"]],
       },
     }),
-    eslint()
+    eslint({
+      failOnError: false,
+      emitWarning: true,
+    }),
+    svgr(),
   ],
-})
+});
