@@ -1,14 +1,22 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Outlet } from "react-router";
 import { ItemList } from "./list/ItemList";
-import { useList, List } from "../store/slices/ListsSlice";
-import { Delete } from "./Delete";
-import { useDispatch } from "react-redux";
-import { removeList } from "../store/slices/ListsSlice";
+import { useList, List, getListsAsync } from "../store/slices/ListsSlice";
 import { CreateListTrigger } from "./list/CreateListTrigger";
+import { AppDispatch, RootState } from "@/store";
 
 export function Layout() {
+  const dispatch = useDispatch<AppDispatch>();
   const lists = useList();
-  const dispatch = useDispatch();
+
+  const authState = useSelector((state: RootState) => {
+    return (state as unknown as { auth: { id?: number } }).auth;
+  });
+
+  useEffect(() => {
+    dispatch(getListsAsync());
+  }, [dispatch]);
 
   return (
     <div className="flex min-h-screen bg-white dark:bg-[#121212]">
@@ -31,20 +39,9 @@ export function Layout() {
 
         <hr className="border-gray-200 dark:border-gray-700" />
 
-        <div className="flex flex-col gap-1 overflow-y-auto">
-          {lists?.map((item: List) => (
-            <div
-              key={item.id}
-              className="group flex w-full items-center justify-between rounded-lg px-2 transition-all hover:bg-gray-100 dark:hover:bg-[#242424]"
-            >
-              <ItemList item={item} />
-              <Delete
-                id={item.id}
-                isIcon
-                onDelete={(id) => dispatch(removeList(id))}
-              />
-            </div>
-          ))}
+        <div className="flex w-full flex-col gap-1 overflow-y-auto">
+          {authState.id &&
+            lists?.map((item: List) => <ItemList key={item.id} item={item} />)}
         </div>
       </aside>
 

@@ -1,75 +1,103 @@
-# React + TypeScript + Vite
+# Modern To-Do & Task Management Application (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Прогрессивное веб-приложение для планирования задач и управления списками дел. Проект построен на актуальном технологическом стеке с упором на автоматическую оптимизацию производительности и строгую типизацию.
 
-Currently, two official plugins are available:
+## 🚀 Ключевые особенности и архитектура
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Автоматическая оптимизация (React Compiler):** В проект интегрирован компилятор React (`babel-plugin-react-compiler`), который автоматически оптимизирует перерисовку компонентов, избавляя от необходимости вручную использовать `useMemo` и `useCallback`.
+- **Управление состоянием (Redux Toolkit):** Глобальный стейт разделен на изолированные слайсы (`authSlice`, `listsSlice`, `todosSlice`). Для логирования изменений и работы с асинхронными данными подключены кастомные Middlewares.
+- **Безопасность роутинга (Auth Guards):** Реализована клиентская защита приватных страниц (`AuthGuard.tsx`). Неавторизованные пользователи автоматически перенаправляются на страницу входа.
+- **Кастомная локализация и темизация:** Реализована мультиязычность (`LanguageContext`) со специальным переключателем интерфейса и поддержка темного/светлого режима оформления (`ThemeContext`). Настройки пользователя сохраняются между сессиями с помощью кастомных хуков синхронизации с `localStorage`.
+- **SVG как компоненты:** Благодаря `vite-plugin-svgr` иконки импортируются напрямую в JSX-код как полноценные React-компоненты.
 
-## React Compiler
+## 🛠 Технологический стек
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **Core:** React 19 / TypeScript (Строгий режим `strict: true`)
+- **Сборщик и окружение:** Vite + React Compiler
+- **Стилизация:** Tailwind CSS v4 (с использованием нативного Vite-плагина)
+- **State Management:** Redux Toolkit (Middlwares + Slices)
+- **Маршрутизация:** React Router Dom (конфигурация в `config/route.tsx`)
+- **Качество кода:** ESLint (автопроверка при сборке проекта)
+- **API клиент:** Axios (Изолированный инстанс `apiInstance` с базовой конфигурацией заголовков)
 
-Note: This will impact Vite dev & build performances.
+## 📁 Подробная структура проекта
 
-## Expanding the ESLint configuration
+В проекте используется модульно-функциональная структура с применением абсолютных импортов через алиас `@/*`:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+src/
+├── api/                  # Слой сетевых запросов
+│   ├── instance.ts       # Настройка Axios (базовый URL, перехватчики токенов)
+│   ├── list.ts           # Эндпоинты CRUD-операций для списков задач
+│   └── todos.ts          # Эндпоинты для управления элементами внутри списков
+├── assets/               # Глобальные стили и статические ресурсы
+│   └── icons/            # Векторные SVG-иконки (например, iconCross.svg)
+├── components/           # Переиспользуемые компоненты интерфейса
+│   ├── list/             # Логика списков (CreateList, CreateListModal, ItemList)
+│   ├── to-do/            # Логика задач (CreateTodo, ItemTodo, ListTodos)
+│   └── ui/               # Базовые дизайн-примитивы (Button, Modal, Свитчи)
+├── config/               # Конфигурационные файлы
+│   └── route.tsx         # Декларативная карта маршрутов приложения
+├── context/              # Контексты React для сквозного функционала
+│   ├── LanguageContext.tsx # Логика смены языков интерфейса
+│   └── ThemeContext.tsx    # Логика переключения тем оформления
+├── hooks/                # Кастомные React-хуки
+│   └── useLocalStorage.ts  # Хук для реактивного сохранения стейта в браузер
+├── pages/                # Компоненты верхнего уровня (Страницы)
+│   ├── AuthGuard.tsx     # Компонент-обертка для защиты приватных роутов
+│   ├── Home.tsx          # Главная страница
+│   └── List.tsx          # Страница детального просмотра выбранного списка
+└── store/                # Настройка глобального хранилища данных
+    ├── middlewares/      # Кастомные прослойки (localStorage синхронизация, logger)
+    ├── slices/           # Redux-слайсы (authSlice, listsSlice, todosSlice)
+    └── index.ts          # Инициализация и типизация Store (`AppDispatch`, `RootState`)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ⚙️ Локальное развертывание
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 1. Подготовка окружения
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Убедитесь, что у вас установлена среда выполнения **Node.js** (рекомендуется LTS версия).
+
+### 2. Клонирование и установка
+
+```bash
+# Клонируйте репозиторий
+git clone <url-вашего-репозитория>
+
+# Перейдите в директорию проекта
+cd <название-папки>
+
+# Установите зависимости проекта
+npm install
 ```
+
+### 3. Переменные окружения (.env)
+
+Создайте файл `.env` в корневом каталоге проекта для настройки адреса бэкенд-сервера:
+
+```env
+VITE_API_BASE_URL=http://localhost:5173 # Или порт вашего бэкенд-API
+```
+
+### 4. Запуск проекта
+
+- **Режим разработки (Development):**
+
+  ```bash
+  npm run dev
+  ```
+
+  Проект запустится локально и будет доступен по адресу, указанному в консоли (по умолчанию `http://localhost:5173`).
+
+- **Линтинг кода (Проверка ошибок):**
+
+  ```bash
+  npm run lint
+  ```
+
+- **Сборка для продакшена (Production Build):**
+  ```bash
+  npm run build
+  ```
+  Оптимизированные и минифицированные файлы будут сгенерированы в директории `dist/`.

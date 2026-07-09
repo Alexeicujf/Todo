@@ -1,25 +1,51 @@
-import { useDispatch } from 'react-redux';
-import { setModalOpen, useOpenModal } from "@/store/slices/TodosSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
+import { setModalOpen } from "@/store/slices/TodosSlice";
 import { CreateTodoModal } from "@/components/to-do/CreateTodoModal";
+import { RootState } from "@/store";
 
 interface CreateTodoProps {
   listId?: string;
 }
 
-export function CreateTodo ({listId}: CreateTodoProps) {
+interface TodoSliceState {
+  isCreateModalOpen?: boolean;
+}
+
+export function CreateTodo({ listId: propListId }: CreateTodoProps) {
   const dispatch = useDispatch();
+  const { listId: urlListId } = useParams();
+
+  const finalListId = urlListId || propListId;
+
+  const isOpen = useSelector((state: RootState) => {
+    const todoState = (state as unknown as { todos: TodoSliceState }).todos;
+    return !!todoState?.isCreateModalOpen;
+  });
+
   const handleOpenModal = () => {
-    dispatch(setModalOpen(true))
-  }
+    dispatch(setModalOpen(true));
+  };
+
   const handleCloseModal = () => {
-    dispatch(setModalOpen(false))
-  }
-  const isOpen = useOpenModal();
+    dispatch(setModalOpen(false));
+  };
+
   return (
     <>
-            <input readOnly onClick={handleOpenModal} type="text" placeholder="Создать задачу" className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-[#242424] border border-gray-200 dark:border-gray-800 rounded-lg cursor-pointer outline-none hover:border-gray-300 dark:hover:border-gray-700 transition-colors placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white" />
-            <CreateTodoModal listId={listId} isOpen={isOpen} onClose={handleCloseModal} />
+      <input
+        readOnly
+        onClick={handleOpenModal}
+        type="text"
+        placeholder="Создать задачу"
+        className="w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 transition-colors outline-none hover:border-gray-300 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:placeholder-gray-500 dark:hover:border-gray-700"
+      />
+      <CreateTodoModal
+        listId={finalListId}
+        isOpen={isOpen}
+        onClose={handleCloseModal}
+        key={isOpen ? "open" : "close"}
+      />
     </>
-  )    
-} 
-
+  );
+}

@@ -1,21 +1,38 @@
-import { useDispatch } from "react-redux";
-import { setModalOpen, useOpenModal } from "@/store/slices/ListsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setModalOpen } from "@/store/slices/ListsSlice";
 import { CreateListModal } from "@/components/list/CreateListModal";
+import { RootState } from "@/store";
 
+interface ListSliceState {
+  isCreateModalOpen?: boolean;
+}
 
 export const CreateListTrigger = () => {
-    const dispatch = useDispatch()
-    const handleOdenModal = () => {
-        dispatch((setModalOpen(true)))
-    }
-    const handleCloseModal = () => {
-        dispatch(setModalOpen(false))
-    }
-    const isOpen = useOpenModal();
-    return (
-        <>
-        <input type="text" placeholder="Создать лист" className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-[#242424] border border-gray-200 dark:border-gray-800 rounded-lg cursor-pointer outline-none hover:border-gray-300 dark:hover:border-gray-700 transition-colors placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white" readOnly onClick={handleOdenModal}/>
-        <CreateListModal isOpen={isOpen}  onClose={handleCloseModal} />
-        </>
-    )
-}
+  const dispatch = useDispatch();
+
+  const isOpen = useSelector((state: RootState) => {
+    const listState = (state as unknown as { list: ListSliceState }).list;
+    return !!listState?.isCreateModalOpen;
+  });
+
+  const handleOpenModal = () => {
+    dispatch(setModalOpen(true));
+  };
+
+  const handleCloseModal = () => {
+    dispatch(setModalOpen(false));
+  };
+
+  return (
+    <>
+      <input
+        type="text"
+        placeholder="Создать лист"
+        className="w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 transition-colors outline-none hover:border-gray-300 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:placeholder-gray-500 dark:hover:border-gray-700"
+        readOnly
+        onClick={handleOpenModal}
+      />
+      <CreateListModal isOpen={isOpen} onClose={handleCloseModal} />
+    </>
+  );
+};

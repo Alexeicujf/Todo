@@ -1,65 +1,97 @@
-import { addList, List, editList} from "@/store/slices/ListsSlice";
-import { Modal } from "@/ui/Modal";
-import { useEffect, useState } from "react"
+import { useState } from "react";
 import { useDispatch } from "react-redux";
+import {
+  List,
+  createListAsync,
+  updateListAsync,
+} from "@/store/slices/ListsSlice";
+import { Modal } from "@/ui/Modal";
+import { AppDispatch } from "@/store";
 
 export interface CreateListModalProps {
-    list?: List,
-    isOpen: boolean,
-    onClose: () => void
+  list?: List;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const CreateListModal = ({list, isOpen, onClose}: CreateListModalProps) => {
-    const [defaultData, setDefaultData] = useState({id: list? list.id: "",title: list ? list.title : "", description: list ? list.description : ""})
-    const dispatch = useDispatch();
-    
-    useEffect(() => {
-        if(isOpen) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setDefaultData({
-                id: list? list.id: "",
-                title: list ? list.title : "", 
-                description: list ? list.description : ""
-            })
-        }
-    }, [isOpen, list]) 
+export const CreateListModal = ({
+  list,
+  isOpen,
+  onClose,
+}: CreateListModalProps) => {
+  const dispatch = useDispatch<AppDispatch>();
 
-    const handleSaveList = () => {
-        if (list) {
-            dispatch(editList({
-                id: defaultData.id,
-                title: defaultData.title,
-                description: defaultData.description
-            }))
-        } else {
-            dispatch(addList({
-                id: defaultData.id,
-                title: defaultData.title,
-                description: defaultData.description
-            }))
-        }
-        onClose();
+  const [title, setTitle] = useState(list ? list.title : "");
+  const [description, setDescription] = useState(list ? list.description : "");
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      setTitle(list ? list.title : "");
+      setDescription(list ? list.description : "");
     }
-   const handleFormSubmit = (e: React.SyntheticEvent) => {
-        e.preventDefault();
-        handleSaveList() //  
+  }
+
+  const handleSaveList = () => {
+    if (!title.trim()) return;
+
+    if (list) {
+      dispatch(
+        updateListAsync({
+          id: list.id,
+          title: title.trim(),
+          description: description.trim(),
+        })
+      )
+        .unwrap()
+        .then(() => {
+          onClose();
+        });
+    } else {
+      dispatch(
+        createListAsync({
+          title: title.trim(),
+          description: description.trim(),
+        })
+      )
+        .unwrap()
+        .then(() => {
+          onClose();
+        });
     }
-    return (
-        <div className="flex flex-col gap-4 p-1">
-            <Modal isOpen={isOpen} onClose={onClose}>
-                
-                <form 
-                    onSubmit={handleFormSubmit} 
-                    className="flex flex-col gap-4 p-1"
-                >
-                    <input className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-[#242424] border border-gray-200 dark:border-gray-800 rounded-lg outline-none focus:border-blue-500 dark:focus:border-blue-500 text-gray-900 dark:text-white transition-colors" type="text" placeholder="Лист" value={defaultData.title} onChange={(e) => setDefaultData({...defaultData, title: e.target.value})}/>
-                    <textarea  className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-[#242424] border border-gray-200 dark:border-gray-800 rounded-lg outline-none focus:border-blue-500 dark:focus:border-blue-500 text-gray-900 dark:text-white h-32 resize-none transition-colors" placeholder="Описание" value={defaultData.description} onChange={(e) => setDefaultData({...defaultData,description: e.target.value})}></textarea>
-                    
-                    <button type="submit" className="w-full py-2 px-4 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors cursor-pointer">
-                        Сохранить
-                    </button>
-                </form>
-            </Modal>
-        </div>
-    )
-}
+  };
+
+  const handleFormSubmit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    handleSaveList();
+  };
+
+  return (
+    <div>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 p-1">
+          <input
+            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 transition-colors outline-none focus:border-blue-500 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:focus:border-blue-500"
+            type="text"
+            placeholder="Название списка"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <textarea
+            className="h-32 w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 transition-colors outline-none focus:border-blue-500 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:focus:border-blue-500"
+            placeholder="Описание списка"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          ></textarea>
+          <button
+            type="submit"
+            className="w-full cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
+          >
+            Сохранить
+          </button>
+        </form>
+      </Modal>
+    </div>
+  );
+};

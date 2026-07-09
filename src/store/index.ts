@@ -3,14 +3,11 @@ import todosReducer from "./slices/TodosSlice";
 import listsReducer from "./slices/ListsSlice";
 import { localStorageMiddelware } from "./middlewares/localStorage";
 import { Logger } from "./middlewares/logger";
-import registerReducer from "./slices/UserRegisterSlice";
-import loginReducer from "./slices/UserLoginSlice";
+import { authSlice } from "./slices/authSlice";
 
 export const store = configureStore({
   reducer: {
-    register: registerReducer,
-
-    login: loginReducer,
+    auth: authSlice.reducer,
     todos: todosReducer,
     list: listsReducer,
   },
