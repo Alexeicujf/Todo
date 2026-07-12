@@ -23,13 +23,11 @@ export interface TodoSliceState {
   error: string | null;
 }
 
-// Конфигурация типов для thunkAPI, чтобы избежать any
 interface ThunkApiConfig {
   state: RootState;
   rejectValue: string;
 }
 
-// Извлекаем userId напрямую из типизированного RootState
 const getUserIdFromState = (state: RootState): number => {
   const userState =
     (state as unknown as Record<string, Record<string, unknown>>).auth ||
@@ -108,7 +106,6 @@ export const updateTodoAsync = createAsyncThunk<
   ThunkApiConfig
 >("todo/update", async ({ todoId, title, description }, thunkAPI) => {
   try {
-    // 💡 ИСПРАВЛЕНО: Делаем запрос напрямую через apiInstance, жестко прописывая путь
     const response = await apiInstance.patch(`/todos/${todoId}`, {
       title,
       description,
@@ -140,7 +137,6 @@ export const TodosSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Получение всех задач
       .addCase(getTodosAsync.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -154,13 +150,11 @@ export const TodosSlice = createSlice({
         state.error = action.payload ?? "Неизвестная ошибка";
       })
 
-      // Создание
       .addCase(createTodoAsynс.fulfilled, (state, action) => {
         state.todos.push(action.payload);
         state.isCreateModalOpen = false;
       })
 
-      // Чекбокс
       .addCase(checkTodoAsyns.fulfilled, (state, action) => {
         const updated = action.payload;
         const index = state.todos.findIndex((item) => item.id === updated.id);
@@ -169,18 +163,15 @@ export const TodosSlice = createSlice({
         }
       })
 
-      // Удаление
       .addCase(removeTodoAsync.fulfilled, (state, action) => {
         state.todos = state.todos.filter((item) => item.id !== action.payload);
       })
 
-      // Обновление (Редактирование) текста и описания
       .addCase(updateTodoAsync.fulfilled, (state, action) => {
         state.isCreateModalOpen = false;
         const updated = action.payload;
         const index = state.todos.findIndex((item) => item.id === updated.id);
         if (index !== -1) {
-          // Обновляем только те поля, которые вернул бэкенд, сохраняя структуру
           state.todos[index] = { ...state.todos[index], ...updated };
         }
       });

@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { createTodoAsynс, updateTodoAsync } from "@/store/slices/TodosSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Modal } from "@/ui/Modal";
+import { Modal } from "@/components/ui/Modal";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Button } from "@/components/ui/Button";
 import { AppDispatch, RootState } from "@/store";
 
 export interface CreateTodoModalProps {
@@ -9,11 +12,6 @@ export interface CreateTodoModalProps {
   isOpen: boolean;
   onClose: () => void;
   todo?: { id: number; title: string; description: string };
-}
-
-interface ListSliceState {
-  activeListId?: string | number;
-  lists?: Array<{ id: string | number }>;
 }
 
 export const CreateTodoModal = ({
@@ -29,7 +27,7 @@ export const CreateTodoModal = ({
       return Number(listId);
     }
 
-    const listState = (state as unknown as { list: ListSliceState }).list;
+    const listState = state.list;
 
     if (listState?.activeListId && !isNaN(Number(listState.activeListId))) {
       return Number(listState.activeListId);
@@ -46,6 +44,12 @@ export const CreateTodoModal = ({
   const [title, setTitle] = useState(todo ? todo.title : "");
   const [description, setDescription] = useState(todo ? todo.description : "");
 
+  const handleClose = () => {
+    setTitle(todo ? todo.title : "");
+    setDescription(todo ? todo.description : "");
+    onClose();
+  };
+
   const handleSaveTodo = () => {
     if (todo) {
       dispatch(
@@ -57,7 +61,7 @@ export const CreateTodoModal = ({
       )
         .unwrap()
         .then(() => {
-          onClose();
+          handleClose();
         });
       return;
     }
@@ -75,6 +79,8 @@ export const CreateTodoModal = ({
     )
       .unwrap()
       .then(() => {
+        setTitle("");
+        setDescription("");
         onClose();
       });
   };
@@ -86,27 +92,23 @@ export const CreateTodoModal = ({
 
   return (
     <div>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={handleClose}>
         <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 p-1">
-          <input
-            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 transition-colors outline-none focus:border-blue-500 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:focus:border-blue-500"
+          <Input
             type="text"
             placeholder="Создать задачу"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <textarea
-            className="h-32 w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 transition-colors outline-none focus:border-blue-500 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:focus:border-blue-500"
+          <Textarea
             placeholder="Описание задачи"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-          ></textarea>
-          <button
-            type="submit"
-            className="w-full cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
-          >
+            className="h-32 resize-none"
+          />
+          <Button size="md" type="submit" className="w-full">
             Сохранить
-          </button>
+          </Button>
         </form>
       </Modal>
     </div>

@@ -11,14 +11,23 @@ import { Delete } from "../Delete";
 
 export function ItemTodo({ item }: { item: Todo }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
   const handleOpenModal = () => setIsOpen(true);
   const handleCloseModal = () => setIsOpen(false);
 
+  const handleDelete = (id: number) => {
+    setIsDeleting(true);
+    setTimeout(() => {
+      dispatch(removeTodoAsync(id));
+    }, 300);
+  };
+
   return (
-    <div className="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 transition-colors hover:bg-gray-100 dark:border-gray-800/60 dark:bg-[#1a1a1a] dark:hover:bg-[#222]">
-      {/* Левая часть: Чекбокс и текст */}
+    <div
+      className={`transition-all duration-300 ${isDeleting ? "animate-fade-out" : "animate-slide-in"} flex w-full items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 transition-colors hover:bg-gray-100 dark:border-gray-800/60 dark:bg-[#1a1a1a] dark:hover:bg-[#222]`}
+    >
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <button
           onClick={() =>
@@ -45,13 +54,8 @@ export function ItemTodo({ item }: { item: Todo }) {
         </span>
       </div>
 
-      {/* Правая часть: Чистая обёртка для удаления без лишних стилей */}
       <div className="flex shrink-0 items-center justify-center">
-        <Delete
-          id={item.id}
-          isIcon
-          onDelete={(id) => dispatch(removeTodoAsync(id))}
-        />
+        <Delete id={item.id} onDelete={handleDelete} />
       </div>
 
       <CreateTodoModal todo={item} isOpen={isOpen} onClose={handleCloseModal} />

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { apiInstance } from "../../api/instance";
-import { useAppSelector } from "../hooks/useAppSelector";
+import { loginRequest, registerRequest } from "@/api/auth";
+import { useAppSelector } from "@/store/hooks/useAppSelector";
 
 export interface authRegister {
   id: number | null;
@@ -15,8 +15,8 @@ export const reducerUser = createAsyncThunk<
   Record<string, string>
 >("auth/register", async (userData, thunkAPI) => {
   try {
-    const response = await apiInstance.post("/register", userData);
-    return response.data;
+    const data = await registerRequest(userData);
+    return data;
   } catch (error) {
     return thunkAPI.rejectWithValue(
       axios.isAxiosError(error) ? error.response?.data?.error : "Ошибка сервера"
@@ -29,8 +29,8 @@ export const logintUser = createAsyncThunk<
   Record<string, string>
 >("auth/login", async (userData, thunkAPI) => {
   try {
-    const response = await apiInstance.post("/login", userData);
-    return response.data;
+    const data = await loginRequest(userData);
+    return data;
   } catch (error) {
     return thunkAPI.rejectWithValue(
       axios.isAxiosError(error) ? error.response?.data?.error : "Ошибка сервера"

@@ -1,46 +1,41 @@
-// useLocalStorage почитать!
-// дженерик ts!!!
-import { useState } from "react"
+import { useState } from "react";
 
 export function useLocalStorage<T>(name: string, initianValue: T) {
-    const [data, setData] = useState<T | null>(() => {
-         const value = localStorage.getItem(name);
-        if (value !== null) {
-            return JSON.parse(value);  // JSON.parse(value); stringify() LOG
-        }
-        //set({})
-        return initianValue;
-    });
- 
+  const [data, setData] = useState<T | null>(() => {
+    const value = localStorage.getItem(name);
+    if (value !== null) {
+      return JSON.parse(value);
+    }
+    return initianValue;
+  });
 
-    const set = (value: any) => {
-        let newValue = value;
-        if (typeof newValue === "object" ) {
-            newValue = JSON.stringify(value); //  stringify - переводит обьъект в строки
-        }
-        localStorage.setItem(name, newValue) ///!!!!!
-        setData(newValue);
-    };
+  const set = (value: any) => {
+    let newValue = value;
+    if (typeof newValue === "object") {
+      newValue = JSON.stringify(value);
+    }
+    localStorage.setItem(name, newValue);
+    setData(newValue);
+  };
 
-    const get = () => {
-        const value = localStorage.getItem(name);
-        if (value !== null) {
-            return JSON.parse(value);  // JSON.parse(value); stringify() LOG
-        }
-        //set({})
-       return initianValue;
-    };
+  const get = () => {
+    const value = localStorage.getItem(name);
+    if (value !== null) {
+      return JSON.parse(value);
+    }
+    return initianValue;
+  };
 
-    const remove = () => {
-        localStorage.removeItem(name);
-        setData(null);
-        return true;
-    };
+  const remove = () => {
+    localStorage.removeItem(name);
+    setData(null);
+    return true;
+  };
 
-//    { useEffect(() => { /// !!!!!!!!!!!!!!!!!!
-//         setData(get());
-//     },[]) 
-    return {
-        set, remove, get, data
-    } 
+  return {
+    set,
+    remove,
+    get,
+    data,
+  };
 }

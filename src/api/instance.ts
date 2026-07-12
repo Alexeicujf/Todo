@@ -1,8 +1,7 @@
 import axios from "axios";
 
-// чтобы везде адрес локалхоста руками
 export const apiInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 apiInstance.interceptors.request.use((config) => {
@@ -12,4 +11,3 @@ apiInstance.interceptors.request.use((config) => {
   }
   return config;
 });
-// ЗАМЕНИТЬ НА ID

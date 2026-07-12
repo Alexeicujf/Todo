@@ -1,0 +1,28 @@
+import { TextareaHTMLAttributes } from "react";
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+  error?: string;
+}
+
+export const Textarea = ({
+  label,
+  error,
+  className = "",
+  ...props
+}: TextareaProps) => {
+  return (
+    <div className="flex w-full flex-col gap-1">
+      {label && (
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </label>
+      )}
+      <textarea
+        className={`min-h-[80px] resize-y rounded-md border bg-white px-3 py-2 text-gray-900 transition-colors outline-none focus:border-blue-500 dark:bg-gray-800 dark:text-gray-100 ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"} ${className}`}
+        {...props}
+      />
+      {error && <span className="text-xs text-red-500">{error}</span>}
+    </div>
+  );
+};

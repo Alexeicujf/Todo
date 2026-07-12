@@ -5,7 +5,10 @@ import {
   createListAsync,
   updateListAsync,
 } from "@/store/slices/ListsSlice";
-import { Modal } from "@/ui/Modal";
+import { Modal } from "@/components/ui/Modal";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Button } from "@/components/ui/Button";
 import { AppDispatch } from "@/store";
 
 export interface CreateListModalProps {
@@ -71,25 +74,21 @@ export const CreateListModal = ({
     <div>
       <Modal isOpen={isOpen} onClose={onClose}>
         <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 p-1">
-          <input
-            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 transition-colors outline-none focus:border-blue-500 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:focus:border-blue-500"
+          <Input
             type="text"
             placeholder="Название списка"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <textarea
-            className="h-32 w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 transition-colors outline-none focus:border-blue-500 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:focus:border-blue-500"
+          <Textarea
             placeholder="Описание списка"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-          ></textarea>
-          <button
-            type="submit"
-            className="w-full cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
-          >
+            className="h-32 resize-none"
+          />
+          <Button type="submit" size="md" className="w-full">
             Сохранить
-          </button>
+          </Button>
         </form>
       </Modal>
     </div>

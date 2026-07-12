@@ -1,7 +1,7 @@
-import { ListTodos } from "../components/to-do/ListTodos";
-import { LanguageSwitcher } from "../components/LanguageSwitcher";
-import { useTheme } from "../context/ThemeContext";
-import { Button } from "../ui/Button";
+import { ListTodos } from "@/components/to-do/ListTodos";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTheme } from "@/context/ThemeContext";
+import { Button } from "@/components/ui/Button";
 import { NavLink } from "react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";

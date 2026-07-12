@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { useAppSelector } from "../hooks/useAppSelector";
+import { useAppSelector } from "@/store/hooks/useAppSelector";
 import {
   getLists,
   createListRequest,
   removeListRequest,
   updateListRequest,
+  ListData,
 } from "@/api/list";
 import axios from "axios";
 
@@ -26,7 +27,13 @@ export const getListsAsync = createAsyncThunk(
   "lists/fetchAll",
   async (_, thunkAPI) => {
     try {
-      const data = await getLists();
+      const state = thunkAPI.getState() as Record<
+        string,
+        Record<string, unknown>
+      >;
+      const userState = state.auth || state.user;
+      const userId = Number(userState?.id || 1);
+      const data = await getLists(userId);
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -133,25 +140,12 @@ export const ListsTodo = createSlice({
     });
     builder.addCase(getListsAsync.fulfilled, (state, action) => {
       state.isLoading = false;
-      const rawLists = Array.isArray(action.payload)
-        ? action.payload
-        : action.payload?.lists || action.payload?.data || [];
-      state.lists = rawLists.map((item: unknown) => {
-        const row = item as Record<string, unknown>;
-        return {
-          id: Number(row.id || row.Id || 0),
-          title: String(
-            row.title ||
-              row.Title ||
-              row.name ||
-              row.Name ||
-              row.text ||
-              row.Text ||
-              ""
-          ),
-          description: String(row.description || row.Description || ""),
-        };
-      });
+      const rawLists = (action.payload as unknown as ListData[]) || [];
+      state.lists = rawLists.map((row) => ({
+        id: row.id,
+        title: row.title || "",
+        description: row.description || "",
+      }));
       localStorage.setItem("saved_lists", JSON.stringify(state.lists));
 
       if (state.activeListId === null && state.lists.length > 0) {
@@ -160,25 +154,12 @@ export const ListsTodo = createSlice({
       }
     });
     builder.addCase(createListAsync.fulfilled, (state, action) => {
-      const payloadObj = action.payload as Record<string, unknown> | undefined;
-      const createdItem = (payloadObj?.list || payloadObj) as
-        | Record<string, unknown>
-        | undefined;
+      const createdItem = action.payload as unknown as ListData;
       if (createdItem) {
         const newList = {
-          id: Number(createdItem.id || createdItem.Id || 0),
-          title: String(
-            createdItem.title ||
-              createdItem.Title ||
-              createdItem.name ||
-              createdItem.Name ||
-              createdItem.text ||
-              createdItem.Text ||
-              ""
-          ),
-          description: String(
-            createdItem.description || createdItem.Description || ""
-          ),
+          id: createdItem.id,
+          title: createdItem.title || "",
+          description: createdItem.description || "",
         };
         state.lists.push(newList);
         localStorage.setItem("saved_lists", JSON.stringify(state.lists));
@@ -204,28 +185,14 @@ export const ListsTodo = createSlice({
       }
     });
     builder.addCase(updateListAsync.fulfilled, (state, action) => {
-      const payloadObj = action.payload as Record<string, unknown> | undefined;
-      const updatedItem = (payloadObj?.list || payloadObj) as
-        | Record<string, unknown>
-        | undefined;
+      const updatedItem = action.payload as unknown as ListData;
       if (!updatedItem) return;
-      const targetId = Number(updatedItem.id || updatedItem.Id || 0);
-      const index = state.lists.findIndex((item) => item.id === targetId);
+      const index = state.lists.findIndex((item) => item.id === updatedItem.id);
       if (index !== -1) {
         state.lists[index] = {
-          id: targetId,
-          title: String(
-            updatedItem.title ||
-              updatedItem.Title ||
-              updatedItem.name ||
-              updatedItem.Name ||
-              updatedItem.text ||
-              updatedItem.Text ||
-              ""
-          ),
-          description: String(
-            updatedItem.description || updatedItem.Description || ""
-          ),
+          id: updatedItem.id,
+          title: updatedItem.title || "",
+          description: updatedItem.description || "",
         };
         localStorage.setItem("saved_lists", JSON.stringify(state.lists));
       }

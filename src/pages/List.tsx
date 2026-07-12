@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react";
-import { ListTodos } from "../components/to-do/ListTodos";
-import { LanguageSwitcher } from "../components/LanguageSwitcher";
-import { useTheme } from "../context/ThemeContext";
-import { Button } from "../ui/Button";
+import { ListTodos } from "@/components/to-do/ListTodos";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTheme } from "@/context/ThemeContext";
+import { Button } from "@/components/ui/Button";
 import { NavLink, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
-import { Todo, getTodosAsync } from "../store/slices/TodosSlice";
+import { Todo, getTodosAsync } from "@/store/slices/TodosSlice";
 import { CreateTodo } from "@/components/to-do/CreateTodo";
 
 interface ListSliceState {
@@ -18,7 +18,6 @@ export function ListPage() {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    console.warn("LOG [ListPage]: Запрашиваем актуальные задачи с сервера...");
     dispatch(getTodosAsync());
   }, [dispatch, listId]);
 
@@ -41,21 +40,13 @@ export function ListPage() {
   const { theme, toggleTheme } = useTheme();
 
   const todosFiltered = useMemo(() => {
-    console.warn("LOG [ListPage]: Все задачи в Redux:", todos);
-    console.warn("LOG [ListPage]: Текущий ID списка из URL:", listId);
-
     const filtered = todos.filter((item: Todo) => {
       const itemTargetList = item.list ? parseInt(String(item.list), 10) : 0;
       const currentUrlList = listId ? parseInt(String(listId), 10) : 0;
 
-      console.warn(
-        `LOG [ListPage]: Сверяем задачу ID=${item.id}. Ее поле list=${itemTargetList} равно ли listId из URL=${currentUrlList}? -> ${itemTargetList === currentUrlList}`
-      );
-
       return itemTargetList === currentUrlList;
     });
 
-    console.warn("LOG [ListPage]: Задачи после фильтрации:", filtered);
     return filtered;
   }, [todos, listId]);
 

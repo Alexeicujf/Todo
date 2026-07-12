@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux";
 import { NavLink, useNavigate, Navigate } from "react-router";
 import { reducerUser, useRegisterState } from "@/store/slices/authSlice";
 import { useEffect } from "react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -28,7 +30,6 @@ export const Registr = () => {
   const navigate = useNavigate();
   const { isAuthenticated, error } = useRegisterState();
 
-  // ИСПРАВЛЕНО: Следим за стейтом. Редирект сработает только ТОГДА, когда стейт полностью обновится
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/app");
@@ -40,7 +41,6 @@ export const Registr = () => {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData);
     try {
-      // Просто дожидаемся успешного ответа сервера, стейт обновится сам в extraReducers
       await dispatch(reducerUser(data as Record<string, string>)).unwrap();
     } catch (err) {
       console.error(err);
@@ -73,33 +73,25 @@ export const Registr = () => {
             <span className="mb-2 block font-semibold transition-colors">
               Login
             </span>
-            <input
-              name="login"
-              type="text"
-              required
-              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 font-light text-gray-800 shadow-sm transition-all focus:border-teal-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-teal-400"
-            />
+            <Input name="login" type="text" required />
           </label>
 
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
             <span className="mb-2 block font-semibold transition-colors">
               Password
             </span>
-            <input
-              name="password"
-              type="password"
-              required
-              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 font-light text-gray-800 shadow-sm transition-all focus:border-teal-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-teal-400"
-            />
+            <Input name="password" type="password" required />
           </label>
 
-          <button
+          <Button
+            size="md"
             disabled={isAuthenticated}
             type="submit"
-            className="cursor-pointer self-end rounded-xl bg-teal-500 px-6 py-2 font-semibold text-white transition-all hover:bg-teal-600 disabled:cursor-not-allowed disabled:bg-teal-300 dark:bg-teal-600 dark:hover:bg-teal-500 dark:disabled:bg-teal-800"
+            variant="primary"
+            className="self-end"
           >
             {isAuthenticated ? "Регистрация..." : "Зарегистрироваться"}
-          </button>
+          </Button>
 
           {error && (
             <div className="rounded-xl bg-red-50 p-3 text-center text-sm font-semibold text-red-500 dark:bg-red-950/50 dark:text-red-400">

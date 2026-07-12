@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Outlet } from "react-router";
 import { ItemList } from "./list/ItemList";
-import { useList, List, getListsAsync } from "../store/slices/ListsSlice";
+import { useList, List, getListsAsync } from "@/store/slices/ListsSlice";
 import { CreateListTrigger } from "./list/CreateListTrigger";
 import { AppDispatch, RootState } from "@/store";
 

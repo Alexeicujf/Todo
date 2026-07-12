@@ -1,28 +1,40 @@
-import { apiInstance } from "./instance";
+import { apiInstance } from "@/api/instance";
+
+export interface ListData {
+  id: number;
+  title: string;
+  description?: string;
+  userId: number;
+}
 
 export const getList = (id: number) => {
-  return apiInstance.get(`/lists/${id}`).then((res) => res.data);
+  return apiInstance.get<ListData>(`/lists/${id}`).then((res) => res.data);
 };
 
-export const getLists = () => {
-  return apiInstance.get("/lists").then((res) => res.data);
+export const getLists = (userId: number) => {
+  return apiInstance
+    .get<ListData[]>("/lists", { params: { userId } })
+    .then((res) => res.data);
 };
-
 export const createListRequest = (listData: {
   title: string;
   description?: string;
   userId: number;
 }) => {
-  return apiInstance.post("/lists", listData).then((res) => res.data);
+  return apiInstance.post<ListData>("/lists", listData).then((res) => res.data);
 };
 
 export const removeListRequest = (id: number) => {
-  return apiInstance.delete(`/lists/${id}`).then((res) => res.data);
+  return apiInstance
+    .delete<{ success: boolean; id: number }>(`/lists/${id}`)
+    .then((res) => res.data);
 };
 
 export const updateListRequest = (
   listData: { title: string; description?: string },
   id: number
 ) => {
-  return apiInstance.put(`/lists/${id}`, listData).then((res) => res.data);
+  return apiInstance
+    .put<ListData>(`/lists/${id}`, listData)
+    .then((res) => res.data);
 };

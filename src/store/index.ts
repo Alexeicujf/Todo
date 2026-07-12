@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import todosReducer from "./slices/TodosSlice";
-import listsReducer from "./slices/ListsSlice";
-import { localStorageMiddelware } from "./middlewares/localStorage";
-import { Logger } from "./middlewares/logger";
-import { authSlice } from "./slices/authSlice";
+import todosReducer from "@/store/slices/TodosSlice";
+import listsReducer from "@/store/slices/ListsSlice";
+import { localStorageMiddelware } from "@/store/middlewares/localStorage";
+import { Logger } from "@/store/middlewares/logger";
+import { authSlice } from "@/store/slices/authSlice";
 
 export const store = configureStore({
   reducer: {

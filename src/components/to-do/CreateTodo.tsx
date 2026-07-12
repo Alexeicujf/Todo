@@ -3,13 +3,10 @@ import { useParams } from "react-router";
 import { setModalOpen } from "@/store/slices/TodosSlice";
 import { CreateTodoModal } from "@/components/to-do/CreateTodoModal";
 import { RootState } from "@/store";
+import { Input } from "@/components/ui/Input";
 
 interface CreateTodoProps {
   listId?: string;
-}
-
-interface TodoSliceState {
-  isCreateModalOpen?: boolean;
 }
 
 export function CreateTodo({ listId: propListId }: CreateTodoProps) {
@@ -18,10 +15,9 @@ export function CreateTodo({ listId: propListId }: CreateTodoProps) {
 
   const finalListId = urlListId || propListId;
 
-  const isOpen = useSelector((state: RootState) => {
-    const todoState = (state as unknown as { todos: TodoSliceState }).todos;
-    return !!todoState?.isCreateModalOpen;
-  });
+  const isOpen = useSelector(
+    (state: RootState) => !!state.todos?.isCreateModalOpen
+  );
 
   const handleOpenModal = () => {
     dispatch(setModalOpen(true));
@@ -33,12 +29,12 @@ export function CreateTodo({ listId: propListId }: CreateTodoProps) {
 
   return (
     <>
-      <input
+      <Input
         readOnly
         onClick={handleOpenModal}
         type="text"
         placeholder="Создать задачу"
-        className="w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 transition-colors outline-none hover:border-gray-300 dark:border-gray-800 dark:bg-[#242424] dark:text-white dark:placeholder-gray-500 dark:hover:border-gray-700"
+        className="cursor-pointer"
       />
       <CreateTodoModal
         listId={finalListId}
